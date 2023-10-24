@@ -1,0 +1,11 @@
+v0.0.1 Init
+
+At this point just Go Tour completed briefly + few chapters from Get Programming with Go book
+
+In earliest versions of planner, all Go files will live under one 'main' package intentionally. Need to check codebase limitations, when there is only one package.
+
+- upgrade to Go 1.21.1
+- drop Makefile
+- init structure
+- add tentative API for SLOTs
+- add custom mini-router (support for http methods and path-variables using Trie)
