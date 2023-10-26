@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>{{.PageTitle}}</title>
+</head>
+<body class="container">
+    <div id="add-new-slot" class="sidebar">
+        <h2>Add new slot</h2>
+        <p>Title <input name="title" type="text"></p>
+        <p>Description <input name="description" type="text"></p>
+        <p>Duration <input name="duration" type="text"></p>
+        <p>PlannedOn <input name="plannedOn" type="datetime-local"></p>
+        <p>Type 
+            <select name="type">
+                <option value="OneTimeEvent">One-time Event</option>
+                <option value="RegularEvent">Regular Event</option>
+                <option value="DailyRoutine">Daily Routine</option>
+                <option value="Education">Education</option>
+            </select>
+        </p>
+        <p>Done <input name="done" type="checkbox"></p>
+        <button>Add slot</button>
+    </div>
+
+    <div id="backlog" class="backlog">
+        <h2>Backlog</h2>
+        {{range .Slots}}
+        <ul>
+            <li>Id: {{.Id}}</li>
+            <li>Title: {{.Title}}</li>
+            <li>Description: {{.Description}}</li>
+            <li>Duration: {{.Duration}}</li>
+            <li>PlannedOn: {{.PlannedOn}}</li>
+            <li>CreatedAt: {{.CreatedAt}}</li>
+            <li>Type: {{.Type}}</li>
+            <li>Done: {{.Done}}</li>
+        </ul>
+        {{end}}
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>

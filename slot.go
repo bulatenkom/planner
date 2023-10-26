@@ -97,6 +97,16 @@ type Slot struct {
 	PlannedOn   time.Time
 	CreatedAt   time.Time
 	Type        SlotType
+	Done        bool
+}
 
-	Done bool
+type SlotDto struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Duration    string `json:"duration"`
+	PlannedOn   string `json:"plannedOn"`
+	CreatedAt   string `json:"createdAt"`
+	Type        string `json:"type"`
+	Done        bool   `json:"done"`
 }

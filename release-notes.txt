@@ -1,3 +1,10 @@
+v0.0.2 Add basic Web UI
+
+- Add basic Web UI (Listing slots, slot creation form)
+- Rework POST method for slot (change query parsing to body parsing)
+- Fix PartNode.Find to correctly determine existence of request.Path in built Endpoints Tree
+
+
 v0.0.1 Init
 
 At this point just Go Tour completed briefly + few chapters from Get Programming with Go book

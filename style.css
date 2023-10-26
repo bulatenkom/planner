@@ -1,0 +1,28 @@
+/* Produced by https://grid.layoutit.com/ */
+
+.container {
+    display: grid;
+    grid-template-columns: 0.7fr 1.6fr 0.7fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 0px 12px;
+    grid-auto-flow: row;
+    justify-items: stretch;
+    grid-template-areas:
+        ". backlog sidebar"
+        ". backlog sidebar"
+        ". backlog sidebar";
+}
+
+.sidebar {
+    grid-area: sidebar;
+}
+
+.backlog {
+    grid-area: backlog;
+}
+
+/* Custom Code */
+
+#add-new-slot {}
+
+#backlog {}

@@ -180,6 +180,7 @@ func (p *PartNode) Find(keys []string) ([]*PartNode, bool) {
 			resPath = append(resPath, n)
 			start = n
 		} else if start.Len() > 0 {
+			hasFound = false
 			for k, v := range start.Childs {
 				if isPathVar(k) {
 					hasFound = true

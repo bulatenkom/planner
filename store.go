@@ -77,7 +77,7 @@ func (ss *SlotStore) putIntoDisk(slot *Slot) (*Slot, error) {
 		return nil, err
 	}
 
-	err = os.WriteFile(fmt.Sprintf("data/slots/%s.txt", slot.Id), json, 0644)
+	err = os.WriteFile(fmt.Sprintf("data/slots/%s.json", slot.Id), json, 0644)
 	if err != nil {
 		panic(err)
 	}
