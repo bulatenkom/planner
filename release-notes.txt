@@ -1,3 +1,9 @@
+v0.0.4 minor update Web UI
+
+- add backlog manipulation (add tasks)
+- add events section
+
+
 v0.0.3 Add TASKs
 
 - rework datastore using generics

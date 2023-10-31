@@ -1,3 +1,10 @@
+/* Reset ul */
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+
 /* Produced by https://grid.layoutit.com/ */
 
 .container {
@@ -26,3 +33,18 @@
 #add-new-event {}
 
 #backlog {}
+
+#events {}
+
+.task-container, .event-container {
+    border-width: 1px;
+    border-style: solid;
+    border-color: lightgray;
+    box-shadow: 0px 2px 2px 0px #7b7b7b40;
+}
+
+.task-container, .event-container > ul {
+    /* background-color: beige; */
+    padding: 5px;
+    padding-left: 26px;
+}

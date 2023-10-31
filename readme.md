@@ -1,5 +1,7 @@
 # Planner
 
+*⚠️ For private usage only. Author doesn't guarantee any future maintenance, releases or breaking changes.*
+
 Planner - это небольшое однопользовательское приложение трекер-задач с веб-интерфейсом.
 
 ## Идея

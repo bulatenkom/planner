@@ -29,7 +29,7 @@ func markEventAsDone(w http.ResponseWriter, r *http.Request) {
 	// End of business logic
 
 	json, err := json.Marshal(event)
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
@@ -40,7 +40,7 @@ func markEventAsDone(w http.ResponseWriter, r *http.Request) {
 
 func findEventsHandler(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(eventStore.FindAll())
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
@@ -97,14 +97,14 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	event, err = eventStore.Create(event)
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
 	json, err := json.Marshal(event)
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
@@ -116,7 +116,7 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 
 func findTasksHandler(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(taskStore.FindAll())
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
@@ -148,14 +148,14 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	task, err = taskStore.Create(task)
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
 	json, err := json.Marshal(task)
-	if err != err {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return

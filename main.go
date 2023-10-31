@@ -60,6 +60,7 @@ func indexView(w http.ResponseWriter, r *http.Request) {
 	content := map[string]any{
 		"PageTitle": "Index Page",
 		"Events":    eventStore.FindAll(),
+		"Tasks":     taskStore.FindAll(),
 	}
 	if err := indexTmpl.Execute(w, content); err != nil {
 		panic(err)
