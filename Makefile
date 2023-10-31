@@ -12,7 +12,7 @@ clean:
 	@ rm ./${BUILD_TARGET}
 
 dev:
-	go build . && ./${BUILD_TARGET}
+	go build . && ./${BUILD_TARGET} -dataRoot=devdata
 
 help:
 	@ printf "'make build' \t\t- build application (producing executable file: '${BUILD_TARGET}')\n"

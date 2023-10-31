@@ -7,8 +7,8 @@
     <title>{{.PageTitle}}</title>
 </head>
 <body class="container">
-    <div id="add-new-slot" class="sidebar">
-        <h2>Add new slot</h2>
+    <div id="add-new-event" class="sidebar">
+        <h2>Add new event</h2>
         <p>Title <input name="title" type="text"></p>
         <p>Description <input name="description" type="text"></p>
         <p>Duration <input name="duration" type="text"></p>
@@ -22,12 +22,12 @@
             </select>
         </p>
         <p>Done <input name="done" type="checkbox"></p>
-        <button>Add slot</button>
+        <button>Add event</button>
     </div>
 
     <div id="backlog" class="backlog">
         <h2>Backlog</h2>
-        {{range .Slots}}
+        {{range .Events}}
         <ul>
             <li>Id: {{.Id}}</li>
             <li>Title: {{.Title}}</li>
