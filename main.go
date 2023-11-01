@@ -16,6 +16,9 @@ var styleCss []byte
 //go:embed script.js
 var scriptJs []byte
 
+//go:embed htmx.min.js
+var htmxMinJs []byte
+
 var AppFlags struct {
 	Port     string
 	DataRoot string
@@ -44,6 +47,7 @@ func main() {
 		w.Write(styleCss)
 	})
 	router.Get("/script.js", func(w http.ResponseWriter, r *http.Request) { w.Write(scriptJs) })
+	router.Get("/htmx.min.js", func(w http.ResponseWriter, r *http.Request) { w.Write(htmxMinJs) })
 
 	// API
 	router.Get("/events", findEventsHandler)
