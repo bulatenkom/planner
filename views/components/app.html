@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="/public/missing/missing.min.css">
+    <title>Planner</title>
+</head>
+<body>
+
+  <header class="navbar" data-overflow-nav>
+    <v-h></v-h> <!-- missing.css uses complicated css-selector to center nav elements. First element like <button> breaks default behavior, for a quick-fix v-h tag can be used. -->
+    <button class="iconbutton" data-nav-expander aria-hidden>
+      &#x2630; <!-- trigram for heaven -->
+    </button>
+    <nav aria-label="App entry point">
+      <ul role="list">
+        <li><a href="/">Main</a></li>
+      </ul>
+    </nav>
+    <nav hx-boost="true" hx-target="main" hx-swap="innerHTML" aria-label="App sections">
+      <ul role="list">
+        <li><a href="/backlog">Backlog</a>
+        <li><a href="/events">Events</a>
+        <li><a href="/calendar">Calendar</a>
+        <li><a href="/readme">README.md</a>
+        <li><a href="/changelog">Changelog</a>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <div hx-get="/views/components/backlog.html" hx-trigger="load" hx-swap="outerHTML">backlog.html</div>
+    <div hx-get="/views/components/events.html" hx-trigger="load" hx-swap="outerHTML">events.html</div>
+
+  </main>
+
+  <footer>
+    <div>
+      <div class="text-align:center">
+        <cite>Credits 2023 bulatenkom</cite>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+  <script src="/public/htmx.min.js"></script>
+  <script type="module" src="public/missing/overflow-nav.js"></script>
+  <script type="module" src="public/missing/19.js"></script>
+  <script type="module" src="public/missing/menu.js"></script>
+  <script type="module" src="public/missing/tabs.js"></script>
+
+</body>
+</html>

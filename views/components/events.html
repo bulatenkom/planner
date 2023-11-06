@@ -1,0 +1,41 @@
+<h1>Events</h1>
+<hr>
+
+<details>
+    <summary>Add New Event Section</summary>
+    <div id="add-new-event">
+        <h2>Add new event</h2>
+        <p>Title <input name="title" type="text"></p>
+        <p>Description <input name="description" type="text"></p>
+        <p>Duration <input name="duration" type="text"></p>
+        <p>PlannedOn <input name="plannedOn" type="datetime-local"></p>
+        <p>Type
+            <select name="type">
+                <option value="OneTimeEvent">One-time Event</option>
+                <option value="RegularEvent">Regular Event</option>
+                <option value="DailyRoutine">Daily Routine</option>
+                <option value="Education">Education</option>
+            </select>
+        </p>
+        <p>Done <input name="done" type="checkbox"></p>
+        <button>Add event</button>
+    </div>
+</details>
+
+<div id="events" class="events">
+    <h2>Events</h2>
+    {{range .Events}}
+    <div class="event-container">
+        <ul>
+            <li>Id: {{.Id}}</li>
+            <li>Title: {{.Title}}</li>
+            <li>Description: {{.Description}}</li>
+            <li>Duration: {{.Duration}}</li>
+            <li>PlannedOn: {{.PlannedOn}}</li>
+            <li>CreatedAt: {{.CreatedAt}}</li>
+            <li>Type: {{.Type}}</li>
+            <li>Done: {{.Done}}</li>
+        </ul>
+    </div>
+    {{end}}
+</div>

@@ -1,23 +1,29 @@
 package main
 
 import (
-	_ "embed"
+	"embed"
 	"flag"
-	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
-
-var indexTmpl = template.Must(template.ParseFiles("index.html"))
-
-//go:embed style.css
-var styleCss []byte
 
 //go:embed script.js
 var scriptJs []byte
 
-//go:embed htmx.min.js
+//go:embed public/htmx.min.js
 var htmxMinJs []byte
+
+//go:embed public/missing/missing.min.css
+var missingCss []byte
+
+//go:embed public/missing/19.js
+//go:embed public/missing/menu.js
+//go:embed public/missing/overflow-nav.js
+//go:embed public/missing/tabs.js
+var missingCss_JSFiles embed.FS
 
 var AppFlags struct {
 	Port     string
@@ -38,16 +44,36 @@ func main() {
 	taskStore = NewStore[Task]()
 
 	router := NewRouter()
-	// View
+	// Views
 	router.Get("/", indexView)
+	router.Get("/views/components/backlog.html", backlogView)
+	router.Get("/views/components/events.html", eventsView)
+	router.Get("/backlog", backlogView)
+	router.Get("/calendar", calendarView)
+	router.Get("/events", eventsView)
+	router.Get("/readme", readmeView)
+	router.Get("/changelog", changelogView)
 
 	// Public Resources
-	router.Get("/style.css", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/public/missing/missing.min.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/css")
-		w.Write(styleCss)
+		w.Write(missingCss)
 	})
 	router.Get("/script.js", func(w http.ResponseWriter, r *http.Request) { w.Write(scriptJs) })
-	router.Get("/htmx.min.js", func(w http.ResponseWriter, r *http.Request) { w.Write(htmxMinJs) })
+	router.Get("/public/htmx.min.js", func(w http.ResponseWriter, r *http.Request) { w.Write(htmxMinJs) })
+	fs.WalkDir(missingCss_JSFiles, ".", func(path string, d fs.DirEntry, err error) error {
+		if filepath.Ext(path) == ".js" {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			router.Get(path, func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Add("Content-Type", "text/javascript")
+				w.Write(data)
+			})
+		}
+		return nil
+	})
 
 	// API
 	router.Get("/events", findEventsHandler)
@@ -58,15 +84,4 @@ func main() {
 	router.Post("/tasks", createTaskHandler)
 
 	log.Fatal(http.ListenAndServe(":"+AppFlags.Port, nil))
-}
-
-func indexView(w http.ResponseWriter, r *http.Request) {
-	content := map[string]any{
-		"PageTitle": "Index Page",
-		"Events":    eventStore.FindAll(),
-		"Tasks":     taskStore.FindAll(),
-	}
-	if err := indexTmpl.Execute(w, content); err != nil {
-		panic(err)
-	}
 }
