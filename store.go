@@ -55,7 +55,7 @@ func NewStore[T Ider]() Store[T] {
 			panic(err)
 		}
 
-		ss.store[entry.Name()] = entity
+		ss.store[(*entity).GetId()] = entity
 	}
 	return ss
 }
@@ -73,6 +73,9 @@ func (ss *Store[T]) FindById(id string) (*T, error) {
 }
 
 func (ss *Store[T]) Create(entity *T) (*T, error) {
+	if ss.exists(entity) {
+		return entity, fmt.Errorf("[Collision occurred] couldn't create a %s. Store already contains ID=%v", ss.entityName, (*entity).GetId())
+	}
 	if _, err := ss.putIntoDisk(entity); err != nil {
 		return nil, err
 	}
@@ -82,15 +85,38 @@ func (ss *Store[T]) Create(entity *T) (*T, error) {
 	return entity, nil
 }
 
-func (ss *Store[T]) putIntoCache(entity *T) (*T, error) {
-	if s, ok := ss.store[(*entity).GetId()]; ok {
-		return s, fmt.Errorf("couldn't create a %s. Store already contains ID=%v", ss.entityName, (*s).GetId())
+func (ss *Store[T]) Update(entity *T) (*T, error) {
+	if !ss.exists(entity) {
+		return entity, fmt.Errorf("couldn't update a %[1]s. Store does not contain %[1]s with ID=%v", ss.entityName, (*entity).GetId())
 	}
+	if _, err := ss.putIntoDisk(entity); err != nil {
+		return nil, err
+	}
+	if _, err := ss.putIntoCache(entity); err != nil {
+		// we don't revert disk write to not lose user data, but it can affect next App startup which will require issue investigation
+		return nil, err
+	}
+	return entity, nil
+}
+
+// putIntoCache writes entity into L1 cache (if exists then override)
+func (ss *Store[T]) putIntoCache(entity *T) (*T, error) {
+
 	ss.store[(*entity).GetId()] = entity
 	return entity, nil
 }
 
-// putIntoDisk writes entity into disk storage
+func (ss *Store[T]) exists(entity *T) bool {
+	_, ok := ss.store[(*entity).GetId()]
+	return ok
+}
+
+func (ss *Store[T]) existsById(id string) bool {
+	_, ok := ss.store[id]
+	return ok
+}
+
+// putIntoDisk writes entity into disk storage (if exists then override)
 func (ss *Store[T]) putIntoDisk(entity *T) (*T, error) {
 	json, err := json.Marshal(entity)
 	if err != nil {
@@ -102,4 +128,21 @@ func (ss *Store[T]) putIntoDisk(entity *T) (*T, error) {
 		panic(err)
 	}
 	return entity, nil
+}
+
+func (ss *Store[T]) deleteById(id string) error {
+	if !ss.existsById(id) {
+		return fmt.Errorf("couldn't delete a %[1]s. Store does not contain %[1]s with ID=%v", ss.entityName, id)
+	}
+
+	// delete from L1 cache
+	entityRef := ss.store[id]
+	delete(ss.store, id)
+	// delete from disk
+	err := os.Remove(filepath.Join(ss.entityLocation, fmt.Sprintf("%s.json", id)))
+	if err != nil {
+		ss.store[id] = entityRef
+		return err
+	}
+	return nil
 }

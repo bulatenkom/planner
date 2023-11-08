@@ -1,0 +1,11 @@
+<div class="task-container box">
+    <ul>
+        <li>Id: {{.Id}}</li>
+        <li>Title: {{.Title}}</li>
+        <li>Description: {{.Description}}</li>
+        <li>CreatedAt: {{.CreatedAt}}</li>
+        <li>Done: {{.Done}}</li>
+    </ul>
+    <button hx-get="/tasks/{{.Id}}/edit" hx-target="closest .task-container"  hx-swap="outerHTML">Edit</button>
+    <button hx-delete="/tasks/{{.Id}}" hx-target="closest .task-container"  hx-swap="outerHTML">Delete</button>
+</div>

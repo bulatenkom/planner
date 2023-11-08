@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,6 +40,24 @@ func markEventAsDone(w http.ResponseWriter, r *http.Request) {
 }
 
 func findEventsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		findEventsHtmlHandler(w, r)
+	default:
+		findEventsJsonHandler(w, r)
+	}
+}
+
+func findEventsHtmlHandler(w http.ResponseWriter, r *http.Request) {
+	content := map[string]any{
+		"Events": eventStore.FindAll(),
+	}
+	if err := templates.ExecuteTemplate(w, "events.html", content); err != nil {
+		panic(err)
+	}
+}
+
+func findEventsJsonHandler(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(eventStore.FindAll())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -61,9 +80,8 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 
 	rcvEvent := EventDto{}
 	if err := json.Unmarshal(body, &rcvEvent); err != nil {
-		fmt.Println(resolveUnmarshalErr(body, err))
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(resolveUnmarshalErr(body, err)))
 		return
 	}
 
@@ -114,6 +132,47 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%v", string(json))
 }
 
+func findTaskByIdHandler(w http.ResponseWriter, r *http.Request) {
+	vars, ok := r.Context().Value("pathvars").(map[string]string)
+	if !ok {
+		http.Error(w, "could not access path variable", http.StatusInternalServerError)
+		return
+	}
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		findTaskByIdHtmlHandler(w, r, vars["{id}"])
+	default:
+		findTaskByIdJsonHandler(w, r, vars["{id}"])
+	}
+}
+
+func findTaskByIdHtmlHandler(w http.ResponseWriter, r *http.Request, id string) {
+	task, err := taskStore.FindById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := templates.ExecuteTemplate(w, "backlog-task.html", task); err != nil {
+		panic(err)
+	}
+}
+
+func findTaskByIdJsonHandler(w http.ResponseWriter, r *http.Request, id string) {
+	task, err := taskStore.FindById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json, err := json.Marshal(task)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%v", string(json))
+}
+
 func findTasksHandler(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(taskStore.FindAll())
 	if err != nil {
@@ -127,6 +186,44 @@ func findTasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createTaskHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		createTaskHtmlHandler(w, r)
+	default:
+		createTaskJsonHandler(w, r)
+	}
+}
+
+func createTaskHtmlHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(16 * 1024)
+
+	rcvTask := TaskDto{
+		Title:       r.FormValue("title"),
+		Description: r.FormValue("description"),
+	}
+
+	// validation should go here...
+
+	task := NewTask(
+		rcvTask.Title,
+		rcvTask.Description,
+	)
+
+	task, err := taskStore.Create(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	// render view
+	w.Header().Add("HX-Trigger", "task-created")
+	if err := templates.ExecuteTemplate(w, "backlog-task.html", task); err != nil {
+		panic(err)
+	}
+}
+
+func createTaskJsonHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -163,6 +260,84 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, "%v", string(json))
+}
+
+func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	vars, ok := r.Context().Value("pathvars").(map[string]string)
+	if !ok {
+		http.Error(w, "could not access path variable", http.StatusInternalServerError)
+		return
+	}
+
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		updateTaskHtmlHandler(w, r, vars["{id}"])
+	default:
+		http.Error(w, "unsuppported content-type", http.StatusNotAcceptable)
+		// updateTaskJsonHandler(w, r)
+	}
+}
+
+func updateTaskHtmlHandler(w http.ResponseWriter, r *http.Request, id string) {
+	r.ParseMultipartForm(16 * 1024)
+
+	taskDone, err := strconv.ParseBool(r.FormValue("done"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rcvTask := TaskDto{
+		Title:       r.FormValue("title"),
+		Description: r.FormValue("description"),
+		Done:        taskDone,
+	}
+
+	// validation should go here...
+
+	task, err := taskStore.FindById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// update
+	task.Title = rcvTask.Title
+	task.Description = rcvTask.Description
+	task.Done = rcvTask.Done
+
+	task, err = taskStore.Update(task)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// render view
+	if err := templates.ExecuteTemplate(w, "backlog-task.html", task); err != nil {
+		panic(err)
+	}
+}
+
+func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	vars, ok := r.Context().Value("pathvars").(map[string]string)
+	if !ok {
+		http.Error(w, "could not access path variable", http.StatusInternalServerError)
+		return
+	}
+
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		deleteTaskHtmlHandler(w, r, vars["{id}"])
+	default:
+		http.Error(w, "unsuppported content-type", http.StatusNotAcceptable)
+		// updateTaskJsonHandler(w, r)
+	}
+}
+
+func deleteTaskHtmlHandler(w http.ResponseWriter, r *http.Request, id string) {
+	if err := taskStore.deleteById(id); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // Grabbed from this thread: https://groups.google.com/g/golang-nuts/c/RKbb4P_psP4

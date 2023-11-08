@@ -49,9 +49,9 @@ func (rtr *Router) Delete(pattern string, handler func(http.ResponseWriter, *htt
 }
 
 func (rtr *Router) bindHandler(method, pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	if _, ok := rtr.endpoints.Find(patternToKeys(method, pattern)); ok {
-		return
-	}
+	//if _, ok := rtr.endpoints.Find(patternToKeys(method, pattern)); ok {
+	//	return
+	//}
 
 	if rtr.wasBoundBefore(pattern) {
 		rtr.endpoints.InsertChain(patternToKeys(method, pattern), handler)

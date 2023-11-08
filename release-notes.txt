@@ -1,3 +1,30 @@
+v0.0.5 Transition to HTMX / Update Web UI
+
+[NOTES]
+- 🗒️ Seems even for hello-world SPA, HTMX is a nightmare. To achieve similar DX to React, Go project must use
+very good Template engine with custom syntax (e.g. 'templ') with components isolation / scoped css, 
+htmx-friendly router/middlewares that will help to deal with URL redirections, navigations, error handling (4xx, 5xx),
+JS for dozens interactive parts, and corner cases that not covered by HTMX.
+- All FE complexity with state/validations/deserialization moved to Backend's View layer.
+- 🗒️ I see very few cases where HTMX is a suitable choice (short build time, frontend without POST/PUT/PATCH actions).
+It's better to keep in mind, that HTMX covers only web-clients needs with further limitations.
+- 🗒️ SPA/MPA with extensive usage of HTMX may lead to slower performance comparing to traditional solutions.
+HTMX it's a paradigm where all state kept on backend, so each interaction with APP leads to request to server.
+So obviously network bandwidth is a bottleneck in every aspects.
+- 🗒️ Reminds me of the old Express/EJS/Vue 0.x days. Some folks can remember old PHP/jQuery + custom attributes.
+- 🗒️ I'm not going to drop JSON API, so I have two options: separate endpoints OR separate view branches.
+I think a more scalable approach to use different view branches for different media-types.
+
+[NEW]
+- transition to HTMX
+- add backlog manipulation (delete/edit tasks)
+- data store extended for update/delete
+
+[FIX]
+- routes with repetitive parts hasn't been registered
+- data store cache loaded incorrectly on startup
+
+
 v0.0.4 minor update Web UI
 
 - add backlog manipulation (add tasks)

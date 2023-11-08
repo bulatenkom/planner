@@ -16,6 +16,9 @@ var scriptJs []byte
 //go:embed public/htmx.min.js
 var htmxMinJs []byte
 
+//go:embed public/marked.min.js
+var markedMinJs []byte
+
 //go:embed public/missing/missing.min.css
 var missingCss []byte
 
@@ -46,8 +49,9 @@ func main() {
 	router := NewRouter()
 	// Views
 	router.Get("/", indexView)
-	router.Get("/views/components/backlog.html", backlogView)
-	router.Get("/views/components/events.html", eventsView)
+	router.Get("/views/components/backlog-create-task", backlogCreateTaskView)
+	router.Get("/tasks/{id}/edit", backlogEditTaskView)
+	router.Get("/views/components/events", eventsView)
 	router.Get("/backlog", backlogView)
 	router.Get("/calendar", calendarView)
 	router.Get("/events", eventsView)
@@ -61,6 +65,10 @@ func main() {
 	})
 	router.Get("/script.js", func(w http.ResponseWriter, r *http.Request) { w.Write(scriptJs) })
 	router.Get("/public/htmx.min.js", func(w http.ResponseWriter, r *http.Request) { w.Write(htmxMinJs) })
+	router.Get("/public/marked.min.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/javascript")
+		w.Write(markedMinJs)
+	})
 	fs.WalkDir(missingCss_JSFiles, ".", func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".js" {
 			data, err := os.ReadFile(path)
@@ -81,7 +89,10 @@ func main() {
 	router.Post("/events/{id}/done", markEventAsDone)
 
 	router.Get("/tasks", findTasksHandler)
+	router.Get("/tasks/{id}", findTaskByIdHandler)
 	router.Post("/tasks", createTaskHandler)
+	router.Put("/tasks/{id}", updateTaskHandler)
+	router.Delete("/tasks/{id}", deleteTaskHandler)
 
 	log.Fatal(http.ListenAndServe(":"+AppFlags.Port, nil))
 }

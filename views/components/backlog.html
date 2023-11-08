@@ -1,28 +1,8 @@
 <h1>Backlog</h1>
 <hr>
 
-<details>
-    <summary>Add New Task Section</summary>
-    <div id="add-new-task">
-        <h2>Add new task</h2>
-        <p>Title <input name="title" type="text"></p>
-        <p>Description <input name="description" type="text"></p>
-        <p>Done <input name="done" type="checkbox"></p>
-        <button>Add task</button>
-    </div>
-</details>
+{{template "backlog-create-task.html"}}
 
 <div id="backlog" class="backlog">
-    <h2>Backlog</h2>
-    {{range .Tasks}}
-    <div class="task-container box">
-        <ul>
-            <li>Id: {{.Id}}</li>
-            <li>Title: {{.Title}}</li>
-            <li>Description: {{.Description}}</li>
-            <li>CreatedAt: {{.CreatedAt}}</li>
-            <li>Done: {{.Done}}</li>
-        </ul>
-    </div>
-    {{end}}
+    {{template "backlog-find-all.html" .}}
 </div>

@@ -1,0 +1,12 @@
+<div class="task-container box" >
+    <ul>
+        <li>Id: {{.Id}}</li>
+        <li>Title: <input type="text" name="title" value="{{.Title}}"></li>
+        <li>Description: <input type="text" name="description" value="{{.Description}}"></li>
+        <li>CreatedAt: {{.CreatedAt}}</li>
+        <li>Done: <input type="text" name="done" value="{{.Done}}"></li>
+    </ul>
+    <button hx-put="/tasks/{{.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Update</button>
+    <button hx-get="/tasks/{{.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Cancel</button>
+</div>
+<!-- <script src="/script.js"></script> -->

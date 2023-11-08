@@ -12,6 +12,7 @@ var templates = template.Must(template.ParseGlob("views/components/*.html"))
 func indexView(w http.ResponseWriter, r *http.Request) {
 	content := map[string]any{
 		"PageTitle": "Index Page", // Obsolete
+		"Tasks":     taskStore.FindAll(),
 	}
 	if err := templates.ExecuteTemplate(w, "app.html", content); err != nil {
 		panic(err)
@@ -23,6 +24,41 @@ func backlogView(w http.ResponseWriter, r *http.Request) {
 		"Tasks": taskStore.FindAll(),
 	}
 	if err := templates.ExecuteTemplate(w, "backlog.html", content); err != nil {
+		panic(err)
+	}
+}
+
+func backlogFindAllView(w http.ResponseWriter, r *http.Request) {
+	content := map[string]any{
+		"Tasks": taskStore.FindAll(),
+	}
+	if err := templates.ExecuteTemplate(w, "backlog-find-all.html", content); err != nil {
+		panic(err)
+	}
+}
+
+func backlogCreateTaskView(w http.ResponseWriter, r *http.Request) {
+	content := map[string]any{
+		"Tasks": taskStore.FindAll(),
+	}
+	if err := templates.ExecuteTemplate(w, "backlog-create-task.html", content); err != nil {
+		panic(err)
+	}
+}
+
+func backlogEditTaskView(w http.ResponseWriter, r *http.Request) {
+	vars, ok := r.Context().Value("pathvars").(map[string]string)
+	if !ok {
+		http.Error(w, "could not access path variable", http.StatusInternalServerError)
+		return
+	}
+
+	task, err := taskStore.FindById(vars["{id}"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := templates.ExecuteTemplate(w, "backlog-edit-task.html", task); err != nil {
 		panic(err)
 	}
 }

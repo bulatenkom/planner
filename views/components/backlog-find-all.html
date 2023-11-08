@@ -1,0 +1,5 @@
+<div id="task-list" class="tasks-container">
+    {{range .Tasks}}
+        {{template "backlog-task.html" .}}
+    {{end}}
+</div>

@@ -1,0 +1,10 @@
+<details hx-get="/views/components/backlog-create-task" hx-trigger="task-created from:body" hx-swap="outerHTML" open>
+    <summary>Add New Task Section</summary>
+    <form id="add-new-task" hx-post="/tasks" hx-target="#task-list" hx-swap="afterbegin">
+        <h2>Add new task</h2>
+        <p>Title <input name="title" type="text"></p>
+        <p>Description <input name="description" type="text"></p>
+        <button>Add task</button>
+    </form>
+</details>
+<!-- <script src="/script.js"></script> -->
