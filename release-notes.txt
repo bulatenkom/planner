@@ -10,7 +10,7 @@ JS for dozens interactive parts, and corner cases that not covered by HTMX.
 It's better to keep in mind, that HTMX covers only web-clients needs with further limitations.
 - 🗒️ SPA/MPA with extensive usage of HTMX may lead to slower performance comparing to traditional solutions.
 HTMX it's a paradigm where all state kept on backend, so each interaction with APP leads to request to server.
-So obviously network bandwidth is a bottleneck in every aspects.
+So obviously network bandwidth is a bottleneck in every aspect.
 - 🗒️ Reminds me of the old Express/EJS/Vue 0.x days. Some folks can remember old PHP/jQuery + custom attributes.
 - 🗒️ I'm not going to drop JSON API, so I have two options: separate endpoints OR separate view branches.
 I think a more scalable approach to use different view branches for different media-types.
@@ -48,9 +48,11 @@ v0.0.2 Add basic Web UI
 
 v0.0.1 Init
 
-At this point just Go Tour completed briefly + few chapters from Get Programming with Go book
+[NOTES]
+🗒️ At this point just Go Tour completed briefly + few chapters from Get Programming with Go book.
 In earliest versions of planner, all Go files will live under one 'main' package intentionally. Need to check codebase limitations, when there is only one package.
 
+[NEW]
 - upgrade to Go 1.21.1
 - drop Makefile
 - init structure

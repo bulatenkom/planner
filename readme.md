@@ -51,3 +51,15 @@ Planner - это небольшое однопользовательское п�
 - Поиск по тегам
 
 ### vX.X Board-based
+
+## Idiology of the repo/project
+
+- Go mod doesn't contain deps
+- Bare minimum CSS library (Just to make it more visually appealing)
+- No direct/manual code in JS/TS/Hyperscript/whatever (only HTMX is allowed AND JS dependencies for Missing.css lib).
+- Author has no prior Go/HTMX knowledge
+
+## Dependencies
+
+- [Missing.css](https://missing.style/)
+- [HTMX](https://htmx.org/)
