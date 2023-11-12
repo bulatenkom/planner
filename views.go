@@ -58,7 +58,13 @@ func backlogEditTaskView(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err := templates.ExecuteTemplate(w, "backlog-edit-task.html", task); err != nil {
+
+	content := map[string]any{
+		"Task":       task,
+		"StatusDict": getStatusDict(),
+	}
+
+	if err := templates.ExecuteTemplate(w, "backlog-edit-task.html", content); err != nil {
 		panic(err)
 	}
 }

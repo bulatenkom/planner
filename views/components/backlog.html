@@ -4,5 +4,5 @@
 {{template "backlog-create-task.html"}}
 
 <div id="backlog" class="backlog">
-    {{template "backlog-find-all.html" .}}
+    <v-h hx-get="/tasks" hx-swap="outerHTML" hx-trigger="load"></v-h>
 </div>

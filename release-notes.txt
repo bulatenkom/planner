@@ -1,3 +1,10 @@
+v0.0.6 Filters
+
+- change task's 'Done' prop to 'Status'
+- add backlog tasks filter by status (new/active/halt/done)
+- allow edit task status
+- remove obsolete script.js
+
 v0.0.5 Transition to HTMX / Update Web UI
 
 [NOTES]

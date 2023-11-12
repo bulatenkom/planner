@@ -1,10 +1,19 @@
 <div class="task-container box">
+    <div>
+        {{ if eq .Status "Active" }}
+            <chip class="info">active</chip>
+        {{ else if eq .Status "Halt" }}
+            <chip class="warn">halt</chip>
+        {{ else if eq .Status "Done" }}
+            <chip class="ok">done</chip>
+        {{ end }}
+    </div>
     <ul>
         <li>Id: {{.Id}}</li>
         <li>Title: {{.Title}}</li>
         <li>Description: {{.Description}}</li>
         <li>CreatedAt: {{.CreatedAt}}</li>
-        <li>Done: {{.Done}}</li>
+        <li>Status: {{.Status}}</li>
     </ul>
     <button hx-get="/tasks/{{.Id}}/edit" hx-target="closest .task-container"  hx-swap="outerHTML">Edit</button>
     <button hx-delete="/tasks/{{.Id}}" hx-target="closest .task-container"  hx-swap="outerHTML">Delete</button>

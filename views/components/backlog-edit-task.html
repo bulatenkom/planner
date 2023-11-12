@@ -1,12 +1,15 @@
-<div class="task-container box" >
+<div class="task-container box" hx-encoding="multipart/form-data">
     <ul>
-        <li>Id: {{.Id}}</li>
-        <li>Title: <input type="text" name="title" value="{{.Title}}"></li>
-        <li>Description: <input type="text" name="description" value="{{.Description}}"></li>
-        <li>CreatedAt: {{.CreatedAt}}</li>
-        <li>Done: <input type="text" name="done" value="{{.Done}}"></li>
+        <li>Id: {{ .Task.Id}}</li>
+        <li>Title: <input type="text" name="title" value="{{.Task.Title}}"></li>
+        <li>Description: <input type="text" name="description" value="{{.Task.Description}}"></li>
+        <li>CreatedAt: {{.Task.CreatedAt}}</li>
+        <li>Status: <select name="status">
+            {{ range .StatusDict }}
+                <option value="{{ . }}" {{ if eq . $.Task.Status}}selected{{ end }}>{{ . }}</option>
+            {{ end }}
+        </select></li>
     </ul>
-    <button hx-put="/tasks/{{.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Update</button>
-    <button hx-get="/tasks/{{.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Cancel</button>
+    <button hx-put="/tasks/{{.Task.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Update</button>
+    <button hx-get="/tasks/{{.Task.Id}}" hx-target="closest .task-container" hx-include="closest .task-container"  hx-swap="outerHTML">Cancel</button>
 </div>
-<!-- <script src="/script.js"></script> -->

@@ -10,9 +10,6 @@ import (
 	"path/filepath"
 )
 
-//go:embed script.js
-var scriptJs []byte
-
 //go:embed public/htmx.min.js
 var htmxMinJs []byte
 
@@ -63,7 +60,6 @@ func main() {
 		w.Header().Add("Content-Type", "text/css")
 		w.Write(missingCss)
 	})
-	router.Get("/script.js", func(w http.ResponseWriter, r *http.Request) { w.Write(scriptJs) })
 	router.Get("/public/htmx.min.js", func(w http.ResponseWriter, r *http.Request) { w.Write(htmxMinJs) })
 	router.Get("/public/marked.min.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/javascript")

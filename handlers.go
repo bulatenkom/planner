@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -174,6 +173,48 @@ func findTaskByIdJsonHandler(w http.ResponseWriter, r *http.Request, id string) 
 }
 
 func findTasksHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Header.Get("HX-Request") {
+	case "true":
+		findTasksHtmlHandler(w, r)
+	default:
+		findTasksJsonHandler(w, r)
+	}
+}
+
+func findTasksHtmlHandler(w http.ResponseWriter, r *http.Request) {
+	status := strings.TrimSpace(r.URL.Query().Get("status"))
+
+	content := map[string]any{
+		"Tasks":      FindAllWithQuery(taskStore, TaskQuery{taskStatus(status)}),
+		"StatusDict": getStatusDict(),
+	}
+	if err := templates.ExecuteTemplate(w, "backlog-find-all.html", content); err != nil {
+		panic(err)
+	}
+}
+
+type TaskQuery struct {
+	Status taskStatus
+}
+
+func FindAllWithQuery(store Store[Task], query TaskQuery) map[string]*Task {
+	if query.Status == "" {
+		return store.store
+	}
+
+	resItems := make(map[string]*Task, len(store.store))
+
+	if query.Status != "" {
+		for k, v := range store.store {
+			if v.Status == query.Status {
+				resItems[k] = v
+			}
+		}
+	}
+	return resItems
+}
+
+func findTasksJsonHandler(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(taskStore.FindAll())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -195,7 +236,11 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createTaskHtmlHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(16 * 1024)
+	err := r.ParseMultipartForm(16 * 1024)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	rcvTask := TaskDto{
 		Title:       r.FormValue("title"),
@@ -209,10 +254,9 @@ func createTaskHtmlHandler(w http.ResponseWriter, r *http.Request) {
 		rcvTask.Description,
 	)
 
-	task, err := taskStore.Create(task)
+	task, err = taskStore.Create(task)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -279,19 +323,23 @@ func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateTaskHtmlHandler(w http.ResponseWriter, r *http.Request, id string) {
-	r.ParseMultipartForm(16 * 1024)
-
-	taskDone, err := strconv.ParseBool(r.FormValue("done"))
+	err := r.ParseMultipartForm(16 * 1024)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	rcvTask := TaskDto{
 		Title:       r.FormValue("title"),
 		Description: r.FormValue("description"),
-		Done:        taskDone,
+		Status:      r.FormValue("status"),
 	}
 
+	taskStatus, err := ParseTaskStatus(rcvTask.Status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	// validation should go here...
 
 	task, err := taskStore.FindById(id)
@@ -303,7 +351,7 @@ func updateTaskHtmlHandler(w http.ResponseWriter, r *http.Request, id string) {
 	// update
 	task.Title = rcvTask.Title
 	task.Description = rcvTask.Description
-	task.Done = rcvTask.Done
+	task.Status = taskStatus
 
 	task, err = taskStore.Update(task)
 	if err != nil {
