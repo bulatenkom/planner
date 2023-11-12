@@ -38,9 +38,9 @@ You shouldn't.
 
 ## Dependencies / Credits
 
-- [Missing.css](https://missing.style/)
-- [HTMX](https://htmx.org/)
-- [Marked.js](https://marked.js.org/)
+- [Missing.css](https://missing.style/) - BSD-2-Clause
+- [HTMX](https://htmx.org/) - BSD-2-Clause
+- [Marked.js](https://marked.js.org/) - MIT
 
 ---
 <div style="text-align: right">MIT</div>
